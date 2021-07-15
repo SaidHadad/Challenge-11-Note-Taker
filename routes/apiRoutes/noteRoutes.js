@@ -1,7 +1,8 @@
 const router = require('express').Router();
 const { createNewNote, validateNote, randomId } = require('../../lib/notes');
-const { notes } = require('../../db/db');
+let {notes} = require('../../db/db');
 const fs = require("fs");
+const path = require('path');
 
 // get route for the notes
 router.get('/notes', (req, res) => {
@@ -20,20 +21,22 @@ router.post("/notes", (req, res) => {
     const note = createNewNote(req.body, notes);
     res.json(note);
   }
-});
+  });
 
-// delete route for notes
-router.delete('/notes/:id', (req, res) => {
-    const deleteNote = notes.findIndex((note) => note.id === req.params.id);
-
-    //splice the note
-    notes.splice(deleteNote, 1);
-
-    //update array after note got delated
-    fs.writeFileSync('./db/db.json', JSON.stringify(notes, null, 2), function(err) {
-        if (err) throw err;
+// delete route for the notes db
+router.delete("/notes/:id", function (req, res) {
+  try {
+    notes = notes.filter(function (note) {
+      return note.id != req.params.id;
     });
-    res.json(deleteNote);
+    fs.writeFileSync(path.join(__dirname, '../../db/db.json'),
+    JSON.stringify({ notes }, null, 2));
+    res.json(notes);
+  } 
+  catch (err) {
+    console.log(err);
+    throw err;
+  }
 });
 
 module.exports = router;
