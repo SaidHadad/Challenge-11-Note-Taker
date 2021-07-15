@@ -23,7 +23,8 @@ router.post("/notes", (req, res) => {
   }
   });
 
-// delete route for the notes db
+// delete route for the notes db 
+// had to implement this here instead of note.js, might work on a better looking solution on the future (but it works YEEEEAAAAI!)
 router.delete("/notes/:id", function (req, res) {
   try {
     notes = notes.filter(function (note) {
